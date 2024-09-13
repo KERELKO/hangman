@@ -1,5 +1,7 @@
 use std::{env, io, process};
 
+mod gallows;
+
 fn get_word_from_env() -> String {
     // Skip the first argument bacause it's the name of the program
     let args: Vec<String> = env::args().skip(1).collect();
@@ -46,11 +48,12 @@ fn print_stats(
 fn main() {
     let word = get_word_from_env();
     let mut hidden_word = String::new();
-    let tries: u8 = 5;
+    let tries: u8 = 10;
     let mut mistakes: u8 = 0;
     for _ in word.chars() {
         hidden_word.push('_');
     }
+    let mut state_manager = gallows::StateManager::new();
     loop {
         if word == hidden_word {
             print_stats("\nYou won!", &word, mistakes, tries, &hidden_word);
@@ -61,6 +64,7 @@ fn main() {
             process::exit(1);
         }
 
+        println!("{}", state_manager);
         println!("\nGuesses: {}", hidden_word);
         println!("Mistakes: {}", mistakes);
         println!("Enter a character: ");
@@ -82,6 +86,7 @@ fn main() {
         if !is_updated {
             mistakes += 1;
             println!("\nIncorrect!");
+            state_manager.next_state()
         }
     }
 }
