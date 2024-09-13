@@ -33,6 +33,16 @@ fn update_word_if_correct(ch: char, word: &String, hidden_word: &mut String) -> 
     found
 }
 
+fn print_stats(
+    msg: &str, word: &String, mistakes: u8, tries: u8, hidden_word: &String,
+) {
+    println!("{msg}");
+    println!("Word: {}", word);
+    println!("Your guesses: {}", hidden_word);
+    println!("Mistakes: {mistakes}");
+    println!("Max tries: {tries}");
+}
+
 fn main() {
     let word = get_word_from_env();
     let mut hidden_word = String::new();
@@ -43,20 +53,15 @@ fn main() {
     }
     loop {
         if word == hidden_word {
-            println!("\nYou won!");
-            println!("Mistakes: {mistakes}");
+            print_stats("\nYou won!", &word, mistakes, tries, &hidden_word);
             process::exit(1);
         }
         if mistakes == tries {
-            println!("\nYou lost!");
-            println!("Word: {}", word);
-            println!("Your guesses: {}", hidden_word);
-            println!("Mistakes: {mistakes}");
+            print_stats("\nYou lost!", &word, mistakes, tries, &hidden_word);
             process::exit(1);
         }
 
-        println!("\n");
-        println!("Word: {}", hidden_word);
+        println!("\nGuesses: {}", hidden_word);
         println!("Mistakes: {}", mistakes);
         println!("Enter a character: ");
 
@@ -76,7 +81,7 @@ fn main() {
         );
         if !is_updated {
             mistakes += 1;
-            println!("Incorrect");
+            println!("\nIncorrect!");
         }
     }
 }
