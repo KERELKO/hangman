@@ -1,6 +1,6 @@
 use core::fmt;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum State {
     State1 = 1,
     State2 = 2,
@@ -9,8 +9,7 @@ pub enum State {
     State5 = 5,
     State6 = 6,
     State7 = 7,
-    State8 = 8,
-    State9 = 9,
+    StateLast = 8,
 }
 impl State {
     pub fn as_str(self) -> &'static str {
@@ -22,8 +21,7 @@ impl State {
             State::State5 => STATE_5,
             State::State6 => STATE_6,
             State::State7 => STATE_7,
-            State::State8 => STATE_8,
-            State::State9 => STATE_9,
+            State::StateLast => STATE_8,
         }
     }
 }
@@ -45,6 +43,10 @@ impl StateManager {
         };
     }
 
+    pub fn is_last_state(&self) -> bool {
+        self.state == State::StateLast
+    }
+
     fn get_state_from_u8(num: u8) -> Option<State> {
         match num {
             1 => Some(State::State1),
@@ -54,8 +56,7 @@ impl StateManager {
             5 => Some(State::State5),
             6 => Some(State::State6),
             7 => Some(State::State7),
-            8 => Some(State::State8),
-            9 => Some(State::State9),
+            8 => Some(State::StateLast),
             _ => None
         }
     }
@@ -158,19 +159,6 @@ const STATE_7: &'static str = r#"
 "#;
 
 const STATE_8: &'static str = r#"
-            -------------
-             |          |
-             0          |
-            /|\         |
-             |          |
-            / \         |
-                        |
-                 --------------
-                ----------------
-               ------------------
-"#;
-
-const STATE_9: &'static str = r#"
             -------------
              |          |
              0          |

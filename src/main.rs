@@ -1,5 +1,7 @@
 use std::{env, io, process};
 
+use gallows::StateManager;
+
 mod gallows;
 
 fn get_word_from_env() -> String {
@@ -36,36 +38,35 @@ fn update_word_if_correct(ch: char, word: &String, hidden_word: &mut String) -> 
 }
 
 fn print_stats(
-    msg: &str, word: &String, mistakes: u8, tries: u8, hidden_word: &String,
+    msg: &str, state: &StateManager, word: &String, mistakes: u8, hidden_word: &String,
 ) {
+    println!("{state}");
     println!("{msg}");
     println!("Word: {}", word);
     println!("Your guesses: {}", hidden_word);
     println!("Mistakes: {mistakes}");
-    println!("Max tries: {tries}");
 }
 
 fn main() {
     let word = get_word_from_env();
     let mut hidden_word = String::new();
-    let tries: u8 = 10;
     let mut mistakes: u8 = 0;
+    let mut state_manager = gallows::StateManager::new();
     for _ in word.chars() {
         hidden_word.push('_');
     }
-    let mut state_manager = gallows::StateManager::new();
     loop {
         if word == hidden_word {
-            print_stats("\nYou won!", &word, mistakes, tries, &hidden_word);
+            print_stats("\nYou won!", &state_manager,&word,  mistakes, &hidden_word);
             process::exit(1);
         }
-        if mistakes == tries {
-            print_stats("\nYou lost!", &word, mistakes, tries, &hidden_word);
+        if state_manager.is_last_state() {
+            print_stats("\nYou lost!", &state_manager,&word,  mistakes, &hidden_word);
             process::exit(1);
         }
 
         println!("{}", state_manager);
-        println!("\nGuesses: {}", hidden_word);
+        println!("Guesses: {}", hidden_word);
         println!("Mistakes: {}", mistakes);
         println!("Enter a character: ");
 
@@ -85,7 +86,6 @@ fn main() {
         );
         if !is_updated {
             mistakes += 1;
-            println!("\nIncorrect!");
             state_manager.next_state()
         }
     }
